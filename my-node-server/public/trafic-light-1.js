@@ -1,61 +1,74 @@
 'use strict';
+/**
+ * The `trafficLight` object is now no longer a global variable. Instead,
+ * it is defined in function `main()` and passed as a parameter to other
+ * functions, as and when needed.
+ */
 
-function runExperiment(sampleSize) {
-  const valueCounts = [0, 0, 0, 0, 0, 0];
-
-  for (let i = 0; i < sampleSize; i++) {
-    let num = Math.ceil(Math.random() * 6);
-    valueCounts[num - 1]++;
-  }
-  console.log(valueCounts);
+function getCurrentState(trafficLight) {
   // TODO
-  // Write a for loop that iterates `sampleSize` times (sampleSize is a number).
-  // In each loop iteration:
-  //
-  // 1. Generate a random integer between 1 and 6 (as if throwing a six-sided die).
-  // 2. Add `1` to the element of the `valueCount` that corresponds to the random
-  //    value from the previous step. Use the first element of `valueCounts`
-  //    for keeping a count how many times the value 1 is thrown, the second
-  //    element for value 2, etc.
+  // Should return the current state (i.e. colour) of the `trafficLight`
+  // object passed as a parameter.
 
-  const results = [];
-
-  for (const value of valueCounts) {
-    let numPercent = (value * 100) / sampleSize;
-    results.push(numPercent.toFixed(2));
-  }
-  // TODO
-  // Write a for..of loop for the `valueCounts` array created in the previous
-  // loop. In each loop iteration:
-  // 1. For each possible value of the die (1-6), compute the percentage of how
-  //    many times that value was thrown. Remember that the first value of
-  //    `valueCounts` represent the die value of 1, etc.
-  // 2. Convert the computed percentage to a number string with a precision of
-  //    two decimals, e.g. '14.60'.
-  // 3. Then push that string onto the `results` array.
-  console.log(results);
-  return results;
+  let light = trafficLight.possibleStates[trafficLight.stateIndex];
+  return light;
 }
 
-runExperiment(100);
+function getNextStateIndex(trafficLight) {
+  // TODO
+  // Return the index of the next state of the `trafficLight` such that:
+  // - if the color is green, it will turn to orange
+  // - if the color is orange, it will turn to red
+  // - if the color is red, it will turn to green
+
+  if (trafficLight.possibleStates[trafficLight.stateIndex] === 'green') {
+    trafficLight.stateIndex = trafficLight.stateIndex + 1;
+  } else if (
+    trafficLight.possibleStates[trafficLight.stateIndex] === 'orange'
+  ) {
+    trafficLight.stateIndex = trafficLight.stateIndex + 1;
+  } else if (trafficLight.possibleStates[trafficLight.stateIndex] === 'red') {
+    trafficLight.stateIndex = trafficLight.possibleStates.indexOf('green');
+  }
+  return trafficLight.stateIndex;
+}
+
+// This function loops for the number of seconds specified by the `secs`
+// parameter and then returns.
+// IMPORTANT: This is not the recommended way to implement 'waiting' in
+// JavaScript. You will learn better ways of doing this when you learn about
+// asynchronous code.
+function waitSync(secs) {
+  const start = Date.now();
+  while (Date.now() - start < secs * 1000) {
+    // nothing do to here
+  }
+}
 
 function main() {
-  const sampleSizes = [100, 1000, 1000000];
+  const trafficLight = {
+    possibleStates: ['green', 'orange', 'red'],
+    stateIndex: 0,
+  };
 
-  for (const i of sampleSizes) {
-    let result = runExperiment(i);
-    console.log(result);
+  for (let cycle = 0; cycle < 6; cycle++) {
+    const currentState = getCurrentState(trafficLight);
+    console.log(cycle, 'The traffic light is now', currentState);
+
+    waitSync(1); // Wait a second before going to the next state
+    trafficLight.stateIndex = getNextStateIndex(trafficLight);
   }
-  // TODO
-  // Write a for..of loop that calls the `runExperiment()` function for each
-  // value of the `sampleSizes` array.
-  // Log the results of each experiment as well as the experiment size to the
-  // console.
-  // The expected output could look like this:
-  //
-  // [ '26.00', '17.00', '10.00', '19.00', '16.00', '12.00' ] 100
-  // [ '14.60', '17.10', '19.30', '15.50', '16.70', '16.80' ] 1000
-  // [ '16.71', '16.68', '16.69', '16.66', '16.67', '16.59' ] 1000000
 }
 
 main();
+/**
+ * The output should be:
+
+0 The traffic light is now green
+1 The traffic light is now orange
+2 The traffic light is now red
+3 The traffic light is now green
+4 The traffic light is now orange
+5 The traffic light is now red
+
+*/
